@@ -6,13 +6,15 @@ import (
 
 type User struct {
 	gorm.Model
-	Username string `json:"username" gorm:"unique;not null"`
+	Username string `json:"username" gorm:"unique"`
+	Email    string `json:"email" gorm:"unique"`
 	Password string `json:"password"`
-	Role     string `json:"role" gorm:"foreignKey:RoleID"`
 	RoleID   uint   `json:"role_id"`
+	Role     Role   `json:"role" gorm:"foreignKey:RoleID"`
 }
 
 type Role struct {
 	gorm.Model
-	Name string `json:"name" gorm:"unique;not null"`
+	Name  string `json:"name" gorm:"unique"`
+	Users []User `gorm:"foreignKey:RoleID"`
 }

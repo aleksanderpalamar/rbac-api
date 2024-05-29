@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 
@@ -37,20 +38,6 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(user)
-}
-
-func GetUsers(w http.ResponseWriter, r *http.Request) {
-	var users []models.User
-	if err := utils.DB.Preload("Role").Find(&users).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			http.Error(w, "No users found", http.StatusNotFound)
-		} else {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		return
-	}
-
-	json.NewEncoder(w).Encode(users)
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -91,4 +78,23 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	})
 
 	json.NewEncoder(w).Encode(map[string]string{"token": token})
+}
+
+func GetUsers(w http.ResponseWriter, r *http.Request) {
+	log.Println("GetUsers: Starting handler")
+
+	var users []models.User
+	if err := utils.DB.Preload("Role").Find(&users).Error; err != nil {
+		log.Println("GetUsers: Error finding users", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := json.NewEncoder(w).Encode(users); err != nil {
+		log.Println("GetUsers: Error enconding response", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	log.Println("GetUsers: Successfully handle request")
 }

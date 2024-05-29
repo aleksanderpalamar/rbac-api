@@ -7,12 +7,10 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func SetupRouter() *mux.Router {
-	router := mux.NewRouter()
-
+func SetupRouter(router *mux.Router) *mux.Router {
 	router.HandleFunc("/login", controllers.Login).Methods("POST")
 	router.HandleFunc("/users", controllers.CreateUser).Methods("POST")
-	router.HandleFunc("/users", middlewares.IsAuthorized("admin", controllers.CreateUser)).Methods("GET")
+	router.HandleFunc("/users", middlewares.IsAuthorized(controllers.GetUsers)).Methods("GET")
 
 	return router
 }

@@ -18,5 +18,8 @@ func ConnectionDB() {
 	}
 
 	// Migrate models
-	DB.AutoMigrate(&models.User{}, &models.Role{})
+	err = DB.AutoMigrate(&models.User{}, &models.Role{})
+	if err != nil {
+		log.Fatal("Failed to migrate models!", err)
+	}
 }
