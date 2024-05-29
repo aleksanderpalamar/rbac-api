@@ -2,15 +2,30 @@ package middlewares
 
 import (
 	"net/http"
+
+	"github.com/aleksanderpalamar/rbac-api/auth"
 )
 
 func IsAuthorized(role string, next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Aqui, você implementaria a lógica para verificar o papel do usuário
-		// Por exemplo, extrair o papel do usuário de um token JWT ou sessão
-		userRole := "admin" // Isso deve ser substituído pela lógica real
+		cookie, err := r.Cookie("token")
+		if err != nil {
+			if err == http.ErrNoCookie {
+				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				return
+			}
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 
-		if userRole != role {
+		tokenStr := cookie.Value
+		claims, err := auth.ParseJWT(tokenStr)
+		if err != nil {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		if claims.Username != role {
 			http.Error(w, "Forbidden", http.StatusForbidden)
 			return
 		}
