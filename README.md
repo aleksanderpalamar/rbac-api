@@ -65,7 +65,6 @@ The application will start listening on port 3000.
   {
     "username": "admin",
     "password": "password",
-    "email": "example@email.com",
     "role": "admin",
     "role_id": 1
   }
@@ -77,7 +76,6 @@ The application will start listening on port 3000.
     {
       "ID": 1,
       "Username": "admin",
-      "Email": "example@email.com",
       "RoleID": 1,
       "CreatedAt": "2024-05-28T00:00:00Z",
       "UpdatedAt": "2024-05-28T00:00:00Z"
