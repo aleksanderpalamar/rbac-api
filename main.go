@@ -21,6 +21,6 @@ func main() {
 	router := mux.NewRouter()
 	routes.SetupRouter(router)
 
-	log.Println("Server started on port 3001")
-	log.Fatal(http.ListenAndServe(":3001", router))
+	log.Println("Server started on port 3000")
+	log.Fatal(http.ListenAndServe(":3000", router))
 }

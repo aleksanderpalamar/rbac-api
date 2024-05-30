@@ -63,6 +63,15 @@ rbac-api/
    ```
 The application will start listening on port 3000.
 
+## Docker and Docker Compose
+
+This project includes a Dockerfile and docker-compose.yml file to help you manage common task more easily. Here's a list of the available commands and a brief description of what they do:
+
+- `docker build -t rbac-api .`: Builds the Docker image.
+- `docker run -d -p 3001:3001 -e DB_HOST=db -e DB_PORT=5432 -e DB_USER=admin -e DB_PASSWORD=password -e DB_NAME=rbac rbac-api`: Runs the Docker container.
+- `docker-compose up -d`: Builds and runs the Docker containers.
+- `docker-compose down`: Stops and removes the Docker containers.
+
 ## API Endpoints
 
 ### User Registration
