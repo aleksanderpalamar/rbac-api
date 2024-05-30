@@ -49,7 +49,15 @@ rbac-api/
    or
    go mod tidy
    ```
-3. Run the application:
+3. Environment variables:
+   ```sh
+   DB_HOST=db
+   DB_PORT=5432
+   DB_USER=<your-username>
+   DB_PASSWORD=<your-password>
+   DB_NAME=<your-database-name>
+   ```
+4. Run the application:
    ```sh
    go run main.go
    ```
