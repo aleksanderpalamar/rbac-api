@@ -17,6 +17,22 @@ func ConnectionDB() {
 		log.Fatal("Failed to connect to database!", err)
 	}
 
+	{ /*
+				dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+				os.Getenv("DB_HOST"),
+				os.Getenv("DB_PORT"),
+				os.Getenv("DB_USER"),
+				os.Getenv("DB_PASSWORD"),
+				os.Getenv("DB_NAME"),
+			)
+
+			DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+			if err != nil {
+				log.Fatal("Failed to connect to database:", err)
+			}
+		*/
+	}
+
 	// Migrate models
 	err = DB.AutoMigrate(&models.User{}, &models.Role{})
 	if err != nil {
