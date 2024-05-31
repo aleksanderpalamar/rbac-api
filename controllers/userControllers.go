@@ -1,100 +1,53 @@
 package controllers
 
 import (
-	"encoding/json"
-	"log"
 	"net/http"
-	"time"
 
 	"github.com/aleksanderpalamar/rbac-api/auth"
 	"github.com/aleksanderpalamar/rbac-api/models"
 	"github.com/aleksanderpalamar/rbac-api/utils"
-	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
+	"github.com/gin-gonic/gin"
 )
 
-func CreateUser(w http.ResponseWriter, r *http.Request) {
-	var user models.User
-	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	if user.Username == "" || user.Password == "" || user.RoleID == 0 {
-		http.Error(w, "Missing required fields", http.StatusBadRequest)
-		return
-	}
-
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	user.Password = string(hashedPassword)
-
-	if err := utils.DB.Create(&user).Error; err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	json.NewEncoder(w).Encode(user)
-}
-
-func Login(w http.ResponseWriter, r *http.Request) {
-	var creds struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	var user models.User
-	if err := utils.DB.Where("username = ?", creds.Username).First(&user).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			http.Error(w, "Invalid credentials", http.StatusUnauthorized)
-		} else {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		}
-		return
-	}
-
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(creds.Password)); err != nil {
-		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
-		return
-	}
-
-	token, err := auth.GenerateJWT(user.Username)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	http.SetCookie(w, &http.Cookie{
-		Name:    "token",
-		Value:   token,
-		Expires: time.Now().Add(24 * time.Hour),
-	})
-
-	json.NewEncoder(w).Encode(map[string]string{"token": token})
-}
-
-func GetUsers(w http.ResponseWriter, r *http.Request) {
-	log.Println("GetUsers: Starting handler")
-
+func GetUsers(c *gin.Context) {
 	var users []models.User
+
 	if err := utils.DB.Preload("Role").Find(&users).Error; err != nil {
-		log.Println("GetUsers: Error finding users", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := json.NewEncoder(w).Encode(users); err != nil {
-		log.Println("GetUsers: Error enconding response", err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	c.JSON(http.StatusOK, users)
+}
+
+func CreateUser(c *gin.Context) {
+	var input models.User
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	log.Println("GetUsers: Successfully handle request")
+	if err := utils.DB.Create(&input).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, input)
+}
+
+func Login(c *gin.Context) {
+	var input models.User
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	token, err := auth.GenerateJWT(input.Username)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"token": token})
 }

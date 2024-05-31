@@ -12,11 +12,6 @@ var DB *gorm.DB
 
 func ConnectionDB() {
 	var err error
-	DB, err = gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
-	if err != nil {
-		log.Fatal("Failed to connect to database!", err)
-	}
-
 	{ /*
 				dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 				os.Getenv("DB_HOST"),
@@ -31,6 +26,11 @@ func ConnectionDB() {
 				log.Fatal("Failed to connect to database:", err)
 			}
 		*/
+	}
+
+	DB, err = gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
+	if err != nil {
+		log.Fatal("Failed to connect to database!", err)
 	}
 
 	// Migrate models

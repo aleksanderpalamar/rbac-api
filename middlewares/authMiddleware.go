@@ -2,33 +2,29 @@ package middlewares
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/aleksanderpalamar/rbac-api/auth"
-	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
 )
 
-func IsAuthorized(next http.HandlerFunc) http.HandlerFunc {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.Header["Authorization"] == nil {
-			http.Error(w, "Missing authorization token", http.StatusUnauthorized)
+func IsAuthorized() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		token := c.GetHeader("Authorization")
+
+		if token == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "No Authorization header provided"})
+			c.Abort()
 			return
 		}
 
-		tokenString := strings.Split(r.Header["Authorization"][0], " ")[1]
-
-		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, http.ErrAbortHandler
-			}
-			return auth.SigningKey, nil
-		})
-
-		if err != nil || !token.Valid {
-			http.Error(w, "Invalid authorization token", http.StatusUnauthorized)
+		claims, err := auth.ValidateToken(token)
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+			c.Abort()
 			return
 		}
 
-		next.ServeHTTP(w, r)
-	})
+		c.Set("username", claims.Username)
+		c.Next()
+	}
 }
