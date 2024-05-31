@@ -1,10 +1,12 @@
 package utils
 
 import (
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/aleksanderpalamar/rbac-api/models"
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -13,24 +15,23 @@ var DB *gorm.DB
 func ConnectionDB() {
 	var err error
 	{ /*
-				dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-				os.Getenv("DB_HOST"),
-				os.Getenv("DB_PORT"),
-				os.Getenv("DB_USER"),
-				os.Getenv("DB_PASSWORD"),
-				os.Getenv("DB_NAME"),
-			)
-
-			DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+				DB, err = gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
 			if err != nil {
-				log.Fatal("Failed to connect to database:", err)
+				log.Fatal("Failed to connect to database!", err)
 			}
 		*/
 	}
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_PORT"),
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_NAME"),
+	)
 
-	DB, err = gorm.Open(sqlite.Open("database.db"), &gorm.Config{})
+	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		log.Fatal("Failed to connect to database!", err)
+		log.Fatal("Failed to connect to database:", err)
 	}
 
 	// Migrate models

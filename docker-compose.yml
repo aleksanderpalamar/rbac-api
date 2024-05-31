@@ -1,29 +1,29 @@
 version: '3.8'
 
 services:
-  app:
-    build: .
+  rbac-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - 3000:3000
+      - "3000:3000"
     environment:
-      - DB_HOST=db
-      - DB_PORT=5432
+      - DB_HOST=postgres
       - DB_USER=admin
-      - DB_PASSWORD=<your-password-db>
+      - DB_PASSWORD=<your_password_here>
       - DB_NAME=rbac
     depends_on:
-      - db
-    
-  db:
-    image: postgres:15
+      - postgres
+
+  postgres:
+    image: postgres:latest
     restart: always
     environment:
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: <your-password-db>
-      POSTGRES_DB: rbac-db
+      POSTGRES_PASSWORD: <your_password_here>
+      POSTGRES_DB: rbac
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
-  pgdata:
-
+  postgres_data:

@@ -9,6 +9,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GetUsers godoc
+// @Summary Get all users
+// @Description Get all users
+// @Tags users
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} models.User
+// @Failure 401 {object} gin.H{"error": "Unauthorized"}
+// @Router /users [get]
 func GetUsers(c *gin.Context) {
 	var users []models.User
 
@@ -20,6 +29,16 @@ func GetUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, users)
 }
 
+// CreateUser godoc
+// @Summary Create a new user
+// @Description Create a new user
+// @Tags users
+// @Accept  json
+// @Produce  json
+// @Param user body models.User true "User"
+// @Success 200 {object} models.User
+// @Failure 400 {object} gin.H{"error": "Bad Request"}
+// @Router /users [post]
 func CreateUser(c *gin.Context) {
 	var input models.User
 
@@ -36,6 +55,16 @@ func CreateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, input)
 }
 
+// Login godoc
+// @Summary Login user
+// @Description Login user
+// @Tags auth
+// @Accept  json
+// @Produce  json
+// @Param login body models.User true "Login"
+// @Success 200 {object} gin.H{"token": "token"}
+// @Failure 401 {object} gin.H{"error": "Unauthorized"}
+// @Router /login [post]
 func Login(c *gin.Context) {
 	var input models.User
 	if err := c.ShouldBindJSON(&input); err != nil {

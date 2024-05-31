@@ -2,30 +2,37 @@ package main
 
 import (
 	"log"
-	"net/http"
+	"os"
 
+	_ "github.com/aleksanderpalamar/rbac-api/docs"
 	"github.com/aleksanderpalamar/rbac-api/routes"
 	"github.com/aleksanderpalamar/rbac-api/utils"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
-	"github.com/rs/cors"
 )
 
+// @title RBAC API
+// @version 1.0
+// @description This is a simple Role-Based Access Control (RBAC) API built with Go.
+// @contact.name Aleksander Palamar
+// @contact.url https://aleksanderpalamar.dev
+// @license.name MIT
+// @license.url https://github.com/aleksanderpalamar/rbac-api/blob/main/LICENSE
+// @host localhost:3000
+// @BasePath /
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
+	utils.LoadEnvVariables()
 	utils.ConnectionDB()
+	utils.Cors()
 
 	router := gin.Default()
 	routes.SetupRouter(router)
 
-	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"},
-		AllowCredentials: true,
-	})
-	handler := c.Handler(router)
-	http.ListenAndServe(":3000", handler)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "3000"
+	}
+
+	if err := router.Run(":" + port); err != nil {
+		log.Fatal("Failed to start server", err)
+	}
 }

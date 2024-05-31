@@ -1,0 +1,14 @@
+basePath: /
+host: localhost:3000
+info:
+  contact:
+    name: Aleksander Palamar
+    url: https://aleksanderpalamar.dev
+  description: This is a simple Role-Based Access Control (RBAC) API built with Go.
+  license:
+    name: MIT
+    url: https://github.com/aleksanderpalamar/rbac-api/blob/main/LICENSE
+  title: RBAC API
+  version: "1.0"
+paths: {}
+swagger: "2.0"

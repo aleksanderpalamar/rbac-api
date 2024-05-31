@@ -1,0 +1,19 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a simple Role-Based Access Control (RBAC) API built with Go.",
+        "title": "RBAC API",
+        "contact": {
+            "name": "Aleksander Palamar",
+            "url": "https://aleksanderpalamar.dev"
+        },
+        "license": {
+            "name": "MIT",
+            "url": "https://github.com/aleksanderpalamar/rbac-api/blob/main/LICENSE"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:3000",
+    "basePath": "/",
+    "paths": {}
+}
